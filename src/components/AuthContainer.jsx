@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-
-const BACKEND_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:5000'
-    : '';
+import { getBackendUrl, getApiEndpoint, config } from '../config/env';
 
 function AuthContainer({ onLogin }) {
     const [isSignup, setIsSignup] = useState(false);
@@ -34,7 +31,7 @@ function AuthContainer({ onLogin }) {
 
         if (loginEmail && loginPassword) {
             try {
-                const response = await fetch(`${BACKEND_BASE}/auth/login`, {
+                const response = await fetch(getApiEndpoint(config.backend.endpoints.authLogin), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: loginEmail, password: loginPassword })
@@ -74,7 +71,7 @@ function AuthContainer({ onLogin }) {
 
         if (firstName && lastName && email && password) {
             try {
-                const response = await fetch(`${BACKEND_BASE}/auth/register`, {
+                const response = await fetch(getApiEndpoint(config.backend.endpoints.authRegister), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ firstName, lastName, email, password })

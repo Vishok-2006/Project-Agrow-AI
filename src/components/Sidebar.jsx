@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-const BACKEND_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:5000'
-    : '';
+import { getBackendUrl, getApiEndpoint, config } from '../config/env';
 
 function Sidebar({ user, activeTool, setActiveTool, onLogout, backendStatus }) {
     const [showSettings, setShowSettings] = useState(false);
@@ -16,7 +13,7 @@ function Sidebar({ user, activeTool, setActiveTool, onLogout, backendStatus }) {
 
     const checkBackendHealth = async () => {
         try {
-            const res = await fetch(`${BACKEND_BASE}/health`);
+            const res = await fetch(getApiEndpoint(config.backend.endpoints.health));
             if (res.ok) {
                 setStatus('connected');
             }
@@ -97,8 +94,8 @@ function Sidebar({ user, activeTool, setActiveTool, onLogout, backendStatus }) {
                         {/* Backend Status Indicator */}
                         <div className="px-3 py-2 mt-2">
                             <div className={`flex items-center text-xs px-3 py-2 rounded-lg border ${status === 'connected'
-                                    ? 'text-green-400 bg-green-400/10 border-green-400/20'
-                                    : 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'
+                                ? 'text-green-400 bg-green-400/10 border-green-400/20'
+                                : 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'
                                 }`}>
                                 <div className={`w-2 h-2 rounded-full mr-2 ${status === 'connected' ? 'bg-green-400' : 'bg-yellow-500 animate-pulse'}`}></div>
                                 <span>{status === 'connected' ? 'Backend Connected' : 'Demo Mode (Offline)'}</span>
