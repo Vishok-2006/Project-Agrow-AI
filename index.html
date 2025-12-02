@@ -1,28 +1,1414 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agrow AI - Intelligent Farming Assistant</title>
-    
-    <!-- Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Agrow AI - Your intelligent companion in agriculture. Get AI-powered farming advice, weather insights, crop predictions, and disease analysis.">
-    <meta name="keywords" content="agriculture, farming, AI assistant, crop management, weather forecast">
-    <meta name="author" content="Agrow AI">
-    
-    <!-- Open Graph / Social Media -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Agrow AI - Intelligent Farming Assistant">
-    <meta property="og:description" content="AI-powered farming solutions for modern agriculture">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Google Fonts: Outfit for a modern, tech-forward look -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --glass-bg: rgba(17, 24, 39, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-glow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f172a;
+            /* Slate 900 */
+            background-image:
+                radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .glass-panel {
+            background: rgba(31, 41, 55, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 5px rgba(16, 185, 129, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .tool-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.5);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .message-bubble {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Input Focus Effects */
+        .custom-input:focus {
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+        }
+
+        /* Auth Form Animations */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Auth Form Transitions */
+        .auth-form-container {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .hidden-form {
+            display: none !important;
+            opacity: 0;
+        }
+
+        .visible-form {
+            display: block !important;
+            opacity: 1;
+            animation: fadeIn 0.4s ease-out;
+        }
+    </style>
 </head>
-<body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+
+<body class="font-sans">
+    <!-- Authentication Container -->
+    <div id="authContainer"
+        class="auth-container fixed inset-0 z-50 flex items-center justify-center overflow-y-auto py-8">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden my-auto">
+            <!-- Header -->
+            <div class="text-center py-8 bg-gradient-to-r from-green-700 to-green-600 text-white">
+                <div class="flex items-center justify-center mb-4">
+                    <i class="fas fa-seedling text-3xl mr-3"></i>
+                    <h1 class="text-2xl font-bold">Agrow AI</h1>
+                </div>
+                <p class="text-green-100">The Intelligent Companion in Agriculture</p>
+            </div>
+
+            <!-- Form Container -->
+            <div class="relative overflow-hidden">
+                <!-- Login Form -->
+                <div id="loginForm" class="visible-form p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Welcome Back</h2>
+                    <form id="loginFormElement">
+                        <div class="mb-4">
+                            <label for="loginEmail" class="block text-sm font-medium text-gray-700 mb-2">Email
+                                Address</label>
+                            <input type="email" id="loginEmail" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-700 focus:border-transparent">
+                        </div>
+                        <div class="mb-6">
+                            <label for="loginPassword"
+                                class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <input type="password" id="loginPassword" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-700 focus:border-transparent">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-green-700 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-800 transition-colors mb-4">
+                            Sign In
+                        </button>
+                    </form>
+                    <div class="text-center">
+                        <p class="text-gray-600">Don't have an account?
+                            <button type="button" id="showSignup"
+                                class="text-green-700 hover:text-green-800 font-semibold">Sign
+                                Up</button>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Signup Form -->
+                <div id="signupForm" class="hidden-form p-8 pb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Join Agrow AI</h2>
+                    <form id="signupFormElement">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First
+                                    Name</label>
+                                <input type="text" id="firstName" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-700 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last
+                                    Name</label>
+                                <input type="text" id="lastName" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-700 focus:border-transparent">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="signupEmail" class="block text-sm font-medium text-gray-700 mb-2">Email
+                                Address</label>
+                            <input type="email" id="signupEmail" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-700 focus:border-transparent">
+                        </div>
+                        <div class="mb-6">
+                            <label for="signupPassword"
+                                class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <input type="password" id="signupPassword" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-700 focus:border-transparent">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-green-700 text-white py-4 px-6 rounded-lg font-semibold hover:bg-green-800 transition-colors mb-6">
+                            Create Account
+                        </button>
+                    </form>
+                    <div class="text-center">
+                        <p class="text-gray-600">Already have an account?
+                            <button id="showLogin" class="text-green-700 hover:text-green-800 font-semibold">Sign
+                                In</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Website Content (Hidden Initially) -->
+    <div id="mainContent" class="hidden h-full">
+        <!-- ChatGPT-style Interface -->
+        <div class="flex h-full">
+            <!-- Sidebar -->
+            <div class="w-72 glass border-r border-gray-800 flex flex-col relative z-20">
+                <!-- Header -->
+                <div class="p-6 border-b border-gray-800/50">
+                    <div class="flex items-center mb-6">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-900/20 mr-3">
+                            <i class="fas fa-leaf text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-white tracking-tight">Agrow AI</h1>
+                            <div class="text-xs text-green-400 font-medium tracking-wide">PRO EDITION</div>
+                        </div>
+                    </div>
+                    <button id="newChatBtn"
+                        class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white py-3 px-4 rounded-xl transition-all shadow-lg shadow-green-900/30 flex items-center justify-center group border border-green-500/20">
+                        <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform"></i>
+                        <span class="font-medium">New Chat</span>
+                    </button>
+                </div>
+
+                <!-- AI Tools Menu -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-6">
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-2">Core Tools</h3>
+                        <div class="space-y-1">
+                            <button
+                                class="tool-btn w-full text-left p-3 rounded-xl hover:bg-white/5 transition-all flex items-center group active border border-transparent hover:border-white/5"
+                                data-tool="assistant">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-green-500/10 text-green-400 flex items-center justify-center mr-3 group-hover:bg-green-500/20 transition-colors">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <span class="font-medium text-gray-300 group-hover:text-white">AI Assistant</span>
+                            </button>
+                            <button
+                                class="tool-btn w-full text-left p-3 rounded-xl hover:bg-white/5 transition-all flex items-center group border border-transparent hover:border-white/5"
+                                data-tool="weather">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center mr-3 group-hover:bg-blue-500/20 transition-colors">
+                                    <i class="fas fa-cloud-sun"></i>
+                                </div>
+                                <span class="font-medium text-gray-300 group-hover:text-white">Weather AI</span>
+                            </button>
+                            <button
+                                class="tool-btn w-full text-left p-3 rounded-xl hover:bg-white/5 transition-all flex items-center group border border-transparent hover:border-white/5"
+                                data-tool="prediction">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center mr-3 group-hover:bg-purple-500/20 transition-colors">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <span class="font-medium text-gray-300 group-hover:text-white">Crop Prediction</span>
+                            </button>
+                            <button
+                                class="tool-btn w-full text-left p-3 rounded-xl hover:bg-white/5 transition-all flex items-center group border border-transparent hover:border-white/5"
+                                data-tool="analysis">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-400 flex items-center justify-center mr-3 group-hover:bg-orange-500/20 transition-colors">
+                                    <i class="fas fa-microscope"></i>
+                                </div>
+                                <span class="font-medium text-gray-300 group-hover:text-white">Crop Analysis</span>
+                            </button>
+                            <button
+                                class="tool-btn w-full text-left p-3 rounded-xl hover:bg-white/5 transition-all flex items-center group border border-transparent hover:border-white/5"
+                                data-tool="library">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-yellow-500/10 text-yellow-400 flex items-center justify-center mr-3 group-hover:bg-yellow-500/20 transition-colors">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <span class="font-medium text-gray-300 group-hover:text-white">Knowledge Base</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Settings & Status -->
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-2">System</h3>
+                        <div class="space-y-1">
+                            <button
+                                class="tool-btn w-full text-left p-3 rounded-xl hover:bg-white/5 transition-all flex items-center group border border-transparent hover:border-white/5"
+                                id="openSettingsBtn">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-gray-700/50 text-gray-400 flex items-center justify-center mr-3 group-hover:bg-gray-700 transition-colors">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <span class="font-medium text-gray-300 group-hover:text-white">Settings</span>
+                            </button>
+
+                            <!-- Backend Status Indicator -->
+                            <div class="px-3 py-2 mt-2" id="backendStatus">
+                                <div
+                                    class="flex items-center text-xs text-yellow-500 bg-yellow-500/10 px-3 py-2 rounded-lg border border-yellow-500/20">
+                                    <div class="w-2 h-2 rounded-full bg-yellow-500 mr-2 animate-pulse"></div>
+                                    <span>Demo Mode (Offline)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Profile -->
+                <div class="p-4 border-t border-gray-800/50 bg-black/20">
+                    <div
+                        class="flex items-center justify-between group cursor-pointer p-2 rounded-xl hover:bg-white/5 transition-colors">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 flex items-center justify-center border-2 border-gray-700 group-hover:border-gray-500 transition-colors"
+                                id="userAvatar">
+                                <span class="text-sm font-bold text-white" id="userInitials">JD</span>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-sm font-medium text-white group-hover:text-green-400 transition-colors"
+                                    id="userNameDisplay">John Doe</div>
+                                <div class="text-xs text-gray-500">Free Plan</div>
+                            </div>
+                        </div>
+                        <button id="logoutBtn" class="text-gray-500 hover:text-red-400 transition-colors p-2">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="flex-1 flex flex-col bg-gray-800">
+                <!-- Header -->
+                <div class="border-b border-gray-700 p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 id="toolTitle" class="text-xl font-semibold text-white">AI Assistant</h2>
+                            <p id="toolDescription" class="text-sm text-gray-300">Get personalized farming advice and
+                                crop recommendations</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="p-2 text-gray-400 hover:text-gray-200 rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                            <button class="p-2 text-gray-400 hover:text-gray-200 rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages Area -->
+                <div id="messagesContainer" class="flex-1 overflow-y-auto p-6 bg-gray-900">
+                    <!-- AI Assistant Content -->
+                    <div id="assistantContent" class="tool-content">
+                        <div class="max-w-4xl mx-auto">
+                            <div class="text-center mb-8">
+                                <div
+                                    class="w-16 h-16 bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-robot text-green-400 text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-white mb-2">AI Farming Assistant</h3>
+                                <p class="text-gray-300">Ask me anything about farming, crops, diseases, or get
+                                    personalized advice</p>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-4 mb-8">
+                                <button
+                                    class="suggestion-btn p-4 bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow text-left border border-gray-700 hover:bg-gray-700">
+                                    <div class="flex items-center mb-2">
+                                        <i class="fas fa-leaf text-green-400 mr-2"></i>
+                                        <span class="font-medium text-white">Crop Health</span>
+                                    </div>
+                                    <!-- Main Content -->
+                                    <div class="flex-1 flex flex-col relative z-10 overflow-hidden">
+                                        <!-- Top Bar -->
+                                        <div
+                                            class="h-16 border-b border-gray-800/50 flex items-center justify-between px-6 bg-gray-900/50 backdrop-blur-md sticky top-0 z-30">
+                                            <div class="flex items-center">
+                                                <div id="toolIconContainer"
+                                                    class="w-8 h-8 rounded-lg bg-green-500/20 text-green-400 flex items-center justify-center mr-3">
+                                                    <i class="fas fa-robot" id="headerIcon"></i>
+                                                </div>
+                                                <div>
+                                                    <h2 class="text-lg font-bold text-white tracking-tight"
+                                                        id="toolTitle">AI Assistant</h2>
+                                                    <p class="text-xs text-gray-400" id="toolDescription">Your
+                                                        intelligent farming companion</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <button
+                                                    class="w-8 h-8 rounded-full bg-gray-800 text-gray-400 hover:text-white flex items-center justify-center transition-colors border border-gray-700 hover:border-gray-600">
+                                                    <i class="fas fa-bell"></i>
+                                                </button>
+                                                <button
+                                                    class="w-8 h-8 rounded-full bg-gray-800 text-gray-400 hover:text-white flex items-center justify-center transition-colors border border-gray-700 hover:border-gray-600">
+                                                    <i class="fas fa-question"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Content Area -->
+                                        <div class="flex-1 overflow-y-auto p-6 scroll-smooth" id="mainScrollArea">
+                                            <div class="max-w-5xl mx-auto">
+                                                <!-- AI Assistant Content -->
+                                                <div id="assistantContent" class="tool-content h-full flex flex-col">
+                                                    <!-- Welcome State -->
+                                                    <div id="chatWelcome" class="text-center py-12">
+                                                        <div
+                                                            class="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-green-900/40 animate-float">
+                                                            <i class="fas fa-robot text-4xl text-white"></i>
+                                                        </div>
+                                                        <h2 class="text-3xl font-bold text-white mb-3">How can I help
+                                                            your farm today?</h2>
+                                                        <p class="text-gray-400 max-w-md mx-auto mb-8">Ask about crop
+                                                            diseases, weather impacts, market prices, or general farming
+                                                            advice.</p>
+
+                                                        <div
+                                                            class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto text-left">
+                                                            <button
+                                                                class="p-4 glass rounded-xl hover:bg-white/5 transition-all group border border-gray-700 hover:border-green-500/30"
+                                                                onclick="sendMessage('How do I treat tomato blight?')">
+                                                                <i
+                                                                    class="fas fa-leaf text-green-400 mb-3 text-xl group-hover:scale-110 transition-transform"></i>
+                                                                <h3 class="font-semibold text-white mb-1">Plant Disease
+                                                                </h3>
+                                                                <p class="text-xs text-gray-400">"How do I treat tomato
+                                                                    blight?"</p>
+                                                            </button>
+                                                            <button
+                                                                class="p-4 glass rounded-xl hover:bg-white/5 transition-all group border border-gray-700 hover:border-blue-500/30"
+                                                                onclick="sendMessage('What is the best fertilizer for corn?')">
+                                                                <i
+                                                                    class="fas fa-flask text-blue-400 mb-3 text-xl group-hover:scale-110 transition-transform"></i>
+                                                                <h3 class="font-semibold text-white mb-1">Fertilizers
+                                                                </h3>
+                                                                <p class="text-xs text-gray-400">"Best fertilizer for
+                                                                    corn?"</p>
+                                                            </button>
+                                                            <button
+                                                                class="p-4 glass rounded-xl hover:bg-white/5 transition-all group border border-gray-700 hover:border-purple-500/30"
+                                                                onclick="sendMessage('Analyze the current market trends for wheat')">
+                                                                <i
+                                                                    class="fas fa-chart-line text-purple-400 mb-3 text-xl group-hover:scale-110 transition-transform"></i>
+                                                                <h3 class="font-semibold text-white mb-1">Market Trends
+                                                                </h3>
+                                                                <p class="text-xs text-gray-400">"Wheat market analysis"
+                                                                </p>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Chat Messages -->
+                                                    <div id="chatMessages" class="flex-1 space-y-6 pb-4 min-h-[400px]">
+                                                        <!-- Messages will appear here -->
+                                                    </div>
+                                                </div>
+
+                                                <!-- Other tools content placeholders (Weather, Prediction, etc.) -->
+                                                <!-- Weather Content -->
+                                                <div id="weatherContent" class="tool-content hidden">
+                                                    <!-- Current Weather Card -->
+                                                    <div
+                                                        class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl shadow-2xl p-8 text-white mb-8 relative overflow-hidden border border-blue-500/30">
+                                                        <div
+                                                            class="absolute -top-10 -right-10 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl">
+                                                        </div>
+                                                        <div
+                                                            class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-blue-900/50 to-transparent">
+                                                        </div>
+
+                                                        <div class="relative z-10">
+                                                            <div class="flex justify-between items-start mb-8">
+                                                                <div>
+                                                                    <div class="flex items-center mb-2">
+                                                                        <i
+                                                                            class="fas fa-map-marker-alt text-blue-300 mr-2"></i>
+                                                                        <span
+                                                                            class="text-blue-100 font-medium tracking-wide"
+                                                                            id="weatherLocation">Detecting
+                                                                            Location...</span>
+                                                                    </div>
+                                                                    <h2 class="text-4xl font-bold mb-1 tracking-tight">
+                                                                        Current Weather</h2>
+                                                                    <p class="text-blue-200 text-sm">Real-time
+                                                                        agricultural weather data</p>
+                                                                </div>
+                                                                <div class="flex flex-col items-end gap-3">
+                                                                    <div class="text-6xl font-bold tracking-tighter"
+                                                                        id="tempEl">--°C</div>
+                                                                    <button id="getLocationBtn"
+                                                                        class="text-xs bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-full transition-all flex items-center backdrop-blur-sm">
+                                                                        <i class="fas fa-location-arrow mr-2"></i> Use
+                                                                        My Location
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="grid grid-cols-3 gap-6">
+                                                                <div
+                                                                    class="text-center bg-black/20 rounded-xl p-4 backdrop-blur-sm border border-white/10">
+                                                                    <i
+                                                                        class="fas fa-tint text-blue-300 text-2xl mb-2"></i>
+                                                                    <div class="text-2xl font-bold" id="humidityEl">--%
+                                                                    </div>
+                                                                    <div
+                                                                        class="text-xs text-blue-200 uppercase tracking-wider">
+                                                                        Humidity</div>
+                                                                </div>
+                                                                <div
+                                                                    class="text-center bg-black/20 rounded-xl p-4 backdrop-blur-sm border border-white/10">
+                                                                    <i
+                                                                        class="fas fa-wind text-gray-300 text-2xl mb-2"></i>
+                                                                    <div class="text-2xl font-bold" id="windEl">-- km/h
+                                                                    </div>
+                                                                    <div
+                                                                        class="text-xs text-blue-200 uppercase tracking-wider">
+                                                                        Wind Speed</div>
+                                                                </div>
+                                                                <div
+                                                                    class="text-center bg-black/20 rounded-xl p-4 backdrop-blur-sm border border-white/10">
+                                                                    <i
+                                                                        class="fas fa-cloud-rain text-blue-300 text-2xl mb-2"></i>
+                                                                    <div class="text-2xl font-bold" id="rainEl">--</div>
+                                                                    <div
+                                                                        class="text-xs text-blue-200 uppercase tracking-wider">
+                                                                        Precipitation</div>
+                                                                </div>
+                                                            </div>
+                                                            <div id="weatherError"
+                                                                class="mt-4 bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-sm text-white hidden flex items-center">
+                                                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                                                <span>Unable to load weather data. Please check
+                                                                    connection.</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Forecast would go here -->
+                                                </div>
+
+                                                <!-- Other tools (Prediction, Analysis, Library) kept simple for brevity but wrapped in container -->
+                                                <div id="predictionContent" class="tool-content hidden">
+                                                    <div class="glass-panel rounded-2xl p-8 text-center">
+                                                        <div
+                                                            class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                                            <i class="fas fa-chart-line text-purple-400 text-3xl"></i>
+                                                        </div>
+                                                        <h3 class="text-2xl font-bold text-white mb-2">Crop Prediction
+                                                            AI</h3>
+                                                        <p class="text-gray-400">Advanced yield forecasting coming soon.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div id="analysisContent" class="tool-content hidden">
+                                                    <div class="glass-panel rounded-2xl p-8">
+                                                        <div class="text-center mb-8">
+                                                            <div
+                                                                class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                                                <i
+                                                                    class="fas fa-microscope text-orange-400 text-3xl"></i>
+                                                            </div>
+                                                            <h3 class="text-2xl font-bold text-white mb-2">Crop Disease
+                                                                Analysis</h3>
+                                                            <p class="text-gray-400">Upload a photo of your crop to
+                                                                detect diseases.</p>
+                                                        </div>
+
+                                                        <div class="border-2 border-dashed border-gray-700 rounded-2xl p-12 text-center hover:border-green-500/50 transition-colors cursor-pointer bg-gray-800/30"
+                                                            id="uploadZone">
+                                                            <i
+                                                                class="fas fa-cloud-upload-alt text-4xl text-gray-500 mb-4"></i>
+                                                            <p class="text-gray-300 font-medium mb-2">Drag & Drop or
+                                                                Click to Upload</p>
+                                                            <p class="text-sm text-gray-500">Supports JPG, PNG (Max 5MB)
+                                                            </p>
+                                                            <input type="file" id="imageInput" class="hidden"
+                                                                accept="image/*">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div id="libraryContent" class="tool-content hidden">
+                                                    <div class="glass-panel rounded-2xl p-6">
+                                                        <div class="flex justify-between items-center mb-6">
+                                                            <h3 class="text-xl font-bold text-white">Knowledge Library
+                                                            </h3>
+                                                            <div class="relative">
+                                                                <input type="text" placeholder="Search articles..."
+                                                                    class="bg-gray-900/50 border border-gray-700 text-white px-4 py-2 pl-10 rounded-lg focus:outline-none focus:border-green-500 w-64">
+                                                                <i
+                                                                    class="fas fa-search absolute left-3 top-3 text-gray-500"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="space-y-4">
+                                                            <!-- Sample Article -->
+                                                            <div
+                                                                class="p-4 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors border border-gray-700/50 cursor-pointer group">
+                                                                <div class="flex justify-between items-start">
+                                                                    <div>
+                                                                        <span
+                                                                            class="text-xs font-bold text-green-400 uppercase tracking-wide mb-1 block">Soil
+                                                                            Health</span>
+                                                                        <h4
+                                                                            class="text-lg font-semibold text-white group-hover:text-green-400 transition-colors">
+                                                                            Understanding NPK Ratios</h4>
+                                                                        <p class="text-sm text-gray-400 mt-1">A
+                                                                            comprehensive guide to nitrogen, phosphorus,
+                                                                            and potassium...</p>
+                                                                    </div>
+                                                                    <i
+                                                                        class="fas fa-chevron-right text-gray-600 group-hover:text-white transition-colors"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <!-- Chat Input Area -->
+                                        <div
+                                            class="p-6 bg-gray-900/80 backdrop-blur-md border-t border-gray-800/50 relative z-30">
+                                            <div class="max-w-4xl mx-auto relative">
+                                                <div
+                                                    class="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl blur-xl opacity-50">
+                                                </div>
+                                                <div
+                                                    class="relative bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-2xl flex items-center p-2 shadow-2xl">
+                                                    <button id="attachBtn"
+                                                        class="p-3 text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl transition-all">
+                                                        <i class="fas fa-paperclip"></i>
+                                                    </button>
+                                                    <input type="text" id="messageInput"
+                                                        placeholder="Ask Agrow AI anything..."
+                                                        class="flex-1 bg-transparent border-none focus:ring-0 text-white px-4 py-3 placeholder-gray-500">
+                                                    <button id="sendBtn"
+                                                        class="p-3 bg-green-600 hover:bg-green-500 text-white rounded-xl shadow-lg shadow-green-900/20 transition-all transform hover:scale-105">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="text-center mt-3">
+                                                    <p class="text-xs text-gray-500">AI can make mistakes. Verify
+                                                        important agricultural decisions.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Modal -->
+                        <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+                            <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+                                id="closeSettingsOverlay"></div>
+                            <div
+                                class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4 relative z-10 border border-gray-700 overflow-hidden">
+                                <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+                                    <h3 class="text-xl font-bold text-white">Settings</h3>
+                                    <button id="closeSettingsBtn"
+                                        class="text-gray-400 hover:text-white transition-colors">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="p-6 space-y-6">
+                                    <!-- Theme Toggle -->
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="text-white font-medium">Dark Mode</div>
+                                            <div class="text-sm text-gray-400">Use dark theme for interface</div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer">
+                                            <div
+                                                class="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600">
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Notifications -->
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="text-white font-medium">Notifications</div>
+                                            <div class="text-sm text-gray-400">Receive alerts for weather & crops</div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer">
+                                            <div
+                                                class="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600">
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Language -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400 mb-2">Language</label>
+                                        <select
+                                            class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-600 focus:border-transparent">
+                                            <option>English</option>
+                                            <option>Spanish</option>
+                                            <option>Hindi</option>
+                                            <option>French</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Account Info -->
+                                    <div class="pt-4 border-t border-gray-700">
+                                        <div class="text-sm text-gray-400 mb-2">Account Type</div>
+                                        <div
+                                            class="flex items-center justify-between bg-gray-700/50 p-3 rounded-lg border border-gray-600">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-crown text-yellow-500 mr-2"></i>
+                                                <span class="text-white font-medium">Premium Plan</span>
+                                            </div>
+                                            <button
+                                                class="text-xs text-green-400 hover:text-green-300 font-medium">Manage</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-gray-900/50 border-t border-gray-700 flex justify-end">
+                                    <button id="saveSettingsBtn"
+                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            // Authentication functionality
+                            const authContainer = document.getElementById('authContainer');
+                            const mainContent = document.getElementById('mainContent');
+                            const loginForm = document.getElementById('loginForm');
+                            const signupForm = document.getElementById('signupForm');
+                            const showSignupBtn = document.getElementById('showSignup');
+                            const showLoginBtn = document.getElementById('showLogin');
+                            const loginFormElement = document.getElementById('loginFormElement');
+                            const signupFormElement = document.getElementById('signupFormElement');
+
+                            // Determine backend URL (relative for Vercel, localhost for local dev)
+                            const BACKEND_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                                ? 'http://localhost:5000'
+                                : '';
+
+                            // Switch between login and signup forms
+                            showSignupBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                loginForm.classList.remove('visible-form');
+                                loginForm.classList.add('hidden-form');
+
+                                signupForm.classList.remove('hidden-form');
+                                signupForm.classList.add('visible-form');
+                            });
+
+                            showLoginBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                signupForm.classList.remove('visible-form');
+                                signupForm.classList.add('hidden-form');
+
+                                loginForm.classList.remove('hidden-form');
+                                loginForm.classList.add('visible-form');
+                            });
+
+                            // Initialize
+                            loginForm.classList.add('visible-form');
+                            loginForm.classList.remove('hidden-form');
+                            signupForm.classList.add('hidden-form');
+                            signupForm.classList.remove('visible-form');
+
+                            // Logout functionality
+                            function logout() {
+                                localStorage.removeItem('token');
+                                localStorage.removeItem('user');
+                                mainContent.classList.add('hidden');
+                                authContainer.classList.remove('hidden');
+                                authContainer.style.opacity = '1';
+                                // Reset forms
+                                loginFormElement.reset();
+                                signupFormElement.reset();
+                            }
+
+                            // Handle login form submission
+                            loginFormElement.addEventListener('submit', async function (e) {
+                                e.preventDefault();
+
+                                const email = document.getElementById('loginEmail').value;
+                                const password = document.getElementById('loginPassword').value;
+
+                                if (email && password) {
+                                    try {
+                                        const response = await fetch(`${BACKEND_BASE}/auth/login`, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ email, password })
+                                        });
+
+                                        const data = await response.json();
+
+                                        if (response.ok) {
+                                            // Store token and user data
+                                            localStorage.setItem('token', data.token);
+                                            localStorage.setItem('user', JSON.stringify(data.user));
+                                            showMainContent();
+                                        } else {
+                                            showAuthMessage(data.error || 'Login failed', 'error');
+                                        }
+                                    } catch (error) {
+                                        console.warn('Backend not available, using demo mode:', error);
+                                        // Demo mode - work without backend
+                                        const demoUser = {
+                                            id: 1,
+                                            firstName: email.split('@')[0],
+                                            lastName: 'User',
+                                            email: email,
+                                            plan: 'demo'
+                                        };
+                                        localStorage.setItem('token', 'demo-token-' + Date.now());
+                                        localStorage.setItem('user', JSON.stringify(demoUser));
+                                        showAuthMessage('Logged in (Demo Mode - Backend not running)', 'success');
+                                        setTimeout(() => showMainContent(), 1000);
+                                    }
+                                } else {
+                                    showAuthMessage('Please fill in all fields.', 'error');
+                                }
+                            });
+
+                            // Handle signup form submission
+                            signupFormElement.addEventListener('submit', async function (e) {
+                                e.preventDefault();
+
+                                const firstName = document.getElementById('firstName').value;
+                                const lastName = document.getElementById('lastName').value;
+                                const email = document.getElementById('signupEmail').value;
+                                const password = document.getElementById('signupPassword').value;
+
+                                if (firstName && lastName && email && password) {
+                                    try {
+                                        const response = await fetch(`${BACKEND_BASE}/auth/register`, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ firstName, lastName, email, password })
+                                        });
+
+                                        const data = await response.json();
+
+                                        if (response.ok) {
+                                            // Store token and user data
+                                            localStorage.setItem('token', data.token);
+                                            localStorage.setItem('user', JSON.stringify(data.user));
+                                            showMainContent();
+                                        } else {
+                                            showAuthMessage(data.error || 'Registration failed', 'error');
+                                        }
+                                    } catch (error) {
+                                        console.warn('Backend not available, using demo mode:', error);
+                                        // Demo mode - work without backend
+                                        const demoUser = {
+                                            id: 1,
+                                            firstName: firstName,
+                                            lastName: lastName,
+                                            email: email,
+                                            plan: 'demo'
+                                        };
+                                        localStorage.setItem('token', 'demo-token-' + Date.now());
+                                        localStorage.setItem('user', JSON.stringify(demoUser));
+                                        showAuthMessage('Registered (Demo Mode - Backend not running)', 'success');
+                                        setTimeout(() => showMainContent(), 1000);
+                                    }
+                                } else {
+                                    showAuthMessage('Please fill in all required fields.', 'error');
+                                }
+                            });
+
+                            // Show main content after successful authentication
+                            function showMainContent() {
+                                authContainer.style.opacity = '0';
+                                setTimeout(() => {
+                                    authContainer.classList.add('hidden');
+                                    mainContent.classList.remove('hidden');
+
+                                    // Update user profile display
+                                    const user = JSON.parse(localStorage.getItem('user') || '{}');
+                                    const userNameEl = document.querySelector('.font-medium');
+                                    const userPlanEl = document.querySelector('.text-sm.text-gray-400');
+
+                                    if (userNameEl && user.firstName) {
+                                        userNameEl.textContent = `${user.firstName} ${user.lastName}`;
+                                    }
+                                    if (userPlanEl && user.plan) {
+                                        userPlanEl.textContent = user.plan.charAt(0).toUpperCase() + user.plan.slice(1) + ' Plan';
+                                    }
+
+                                    initializeChatInterface();
+                                }, 500);
+                            }
+
+                            // Show authentication messages
+                            function showAuthMessage(message, type) {
+                                const activeForm = loginForm.classList.contains('slide-left') ? signupForm : loginForm;
+                                const existingMessage = activeForm.querySelector('.auth-message');
+                                if (existingMessage) {
+                                    existingMessage.remove();
+                                }
+
+                                const messageDiv = document.createElement('div');
+                                messageDiv.className = `auth-message mt-4 px-4 py-3 rounded ${type === 'error' ? 'bg-red-100 border border-red-400 text-red-700' : 'bg-green-100 border border-green-400 text-green-700'}`;
+                                messageDiv.innerHTML = `<strong>${type === 'error' ? 'Error!' : 'Success!'}</strong> ${message}`;
+
+                                activeForm.appendChild(messageDiv);
+
+                                setTimeout(() => {
+                                    messageDiv.remove();
+                                }, 5000);
+                            }
+
+                            // Initialize chat interface
+                            function initializeChatInterface() {
+                                const toolBtns = document.querySelectorAll('.tool-btn');
+                                const toolContents = document.querySelectorAll('.tool-content');
+                                const toolTitle = document.getElementById('toolTitle');
+                                const toolDescription = document.getElementById('toolDescription');
+                                const messageInput = document.getElementById('messageInput');
+                                const sendBtn = document.getElementById('sendBtn');
+                                const chatMessages = document.getElementById('chatMessages');
+                                const suggestionBtns = document.querySelectorAll('.suggestion-btn');
+                                const newChatBtn = document.getElementById('newChatBtn');
+                                const uploadZone = document.getElementById('uploadZone');
+                                const cropImageInput = document.getElementById('cropImageInput');
+                                const analysisResults = document.getElementById('analysisResults');
+                                const analyzedImage = document.getElementById('analyzedImage');
+                                const logoutBtn = document.getElementById('logoutBtn');
+
+                                // Logout button handler
+                                if (logoutBtn) {
+                                    logoutBtn.addEventListener('click', logout);
+                                }
+
+                                // Backend Health Check
+                                async function checkBackendHealth() {
+                                    const statusEl = document.getElementById('backendStatus');
+                                    if (!statusEl) return;
+
+                                    try {
+                                        const res = await fetch(`${BACKEND_BASE}/health`);
+                                        if (res.ok) {
+                                            statusEl.className = 'flex items-center text-xs text-green-400 bg-green-400/10 px-3 py-2 rounded-lg border border-green-400/20';
+                                            statusEl.innerHTML = `
+                            <div class="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
+                            <span>Backend Connected</span>
+                        `;
+                                        }
+                                    } catch (e) {
+                                        // Keep default demo mode style
+                                        console.log('Backend offline, running in demo mode');
+                                    }
+                                }
+
+                                // Run check immediately and every 30 seconds
+                                checkBackendHealth();
+                                setInterval(checkBackendHealth, 30000);
+
+                                // Knowledge Library Search (Client-side fallback)
+                                const librarySearchInput = document.querySelector('#libraryContent input[type="text"]');
+                                if (librarySearchInput) {
+                                    librarySearchInput.addEventListener('input', (e) => {
+                                        const query = e.target.value.toLowerCase();
+                                        const articles = document.querySelectorAll('#libraryContent ul li');
+                                        const categories = document.querySelectorAll('#libraryContent .bg-gray-800');
+
+                                        categories.forEach(category => {
+                                            let hasVisibleArticles = false;
+                                            const categoryArticles = category.querySelectorAll('li');
+
+                                            categoryArticles.forEach(article => {
+                                                const text = article.textContent.toLowerCase();
+                                                if (text.includes(query)) {
+                                                    article.style.display = 'block';
+                                                    hasVisibleArticles = true;
+                                                } else {
+                                                    article.style.display = 'none';
+                                                }
+                                            });
+
+                                            // Show/hide entire category based on matches
+                                            if (query === '' || hasVisibleArticles) {
+                                                category.style.display = 'block';
+                                            } else {
+                                                category.style.display = 'none';
+                                            }
+                                        });
+                                    });
+                                }
+
+                                // Weather DOM elements
+                                const tempEl = document.getElementById('tempEl');
+                                const humidityEl = document.getElementById('humidityEl');
+                                const windEl = document.getElementById('windEl');
+                                const rainEl = document.getElementById('rainEl');
+                                const weatherError = document.getElementById('weatherError');
+                                const weatherLocation = document.getElementById('weatherLocation');
+                                const getLocationBtn = document.getElementById('getLocationBtn');
+
+                                // Default coordinates (Tamil Nadu, India)
+                                const DEFAULT_LAT = 10.96;
+                                const DEFAULT_LON = 78.08;
+
+                                // Async function that calls backend proxy /api/weather
+                                async function fetchWeather(lat = DEFAULT_LAT, lon = DEFAULT_LON, isAuto = false) {
+                                    try {
+                                        weatherError.classList.add('hidden');
+                                        if (weatherLocation) weatherLocation.textContent = isAuto ? 'Locating...' : 'Updating...';
+
+                                        const url = `${BACKEND_BASE}/api/weather?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
+                                        const res = await fetch(url);
+
+                                        if (!res.ok) {
+                                            const text = await res.text().catch(() => '');
+                                            throw new Error(`Weather proxy error: ${res.status} ${res.statusText} ${text}`);
+                                        }
+
+                                        const data = await res.json();
+
+                                        // Update UI
+                                        tempEl.textContent = data.main && typeof data.main.temp !== 'undefined' ? `${Math.round(data.main.temp)}°C` : '--°C';
+                                        humidityEl.textContent = data.main && typeof data.main.humidity !== 'undefined' ? `${data.main.humidity}%` : '--%';
+
+                                        const windKmh = data.wind && data.wind.speed ? Math.round(data.wind.speed * 3.6) : '--';
+                                        windEl.textContent = windKmh === '--' ? '-- km/h' : `${windKmh} km/h`;
+
+                                        const precipitation = (data.rain && data.rain['1h']) ? `${data.rain['1h']} mm` : ((data.snow && data.snow['1h']) ? `${data.snow['1h']} mm` : '0 mm');
+                                        rainEl.textContent = precipitation;
+
+                                        // Update location name
+                                        if (weatherLocation) {
+                                            weatherLocation.textContent = data.name ? `${data.name}, ${data.sys?.country || ''}` : `Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`;
+                                        }
+
+                                    } catch (err) {
+                                        console.error('fetchWeather error', err);
+                                        if (weatherError) {
+                                            weatherError.textContent = 'Unable to load weather data. Please check your connection.';
+                                            weatherError.classList.remove('hidden');
+                                        }
+                                        if (weatherLocation) weatherLocation.textContent = 'Location unavailable';
+
+                                        tempEl.textContent = '--°C';
+                                        humidityEl.textContent = '--%';
+                                        windEl.textContent = '-- km/h';
+                                        rainEl.textContent = '--';
+                                    }
+                                }
+
+                                // Handle Geolocation
+                                if (getLocationBtn) {
+                                    getLocationBtn.addEventListener('click', () => {
+                                        if (navigator.geolocation) {
+                                            getLocationBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Locating...';
+                                            navigator.geolocation.getCurrentPosition(
+                                                (position) => {
+                                                    fetchWeather(position.coords.latitude, position.coords.longitude, true);
+                                                    getLocationBtn.innerHTML = '<i class="fas fa-location-arrow mr-1"></i> Use My Location';
+                                                },
+                                                (error) => {
+                                                    console.error('Geolocation error:', error);
+                                                    weatherError.textContent = 'Location access denied. Using default location.';
+                                                    weatherError.classList.remove('hidden');
+                                                    getLocationBtn.innerHTML = '<i class="fas fa-location-arrow mr-1"></i> Use My Location';
+                                                    fetchWeather(DEFAULT_LAT, DEFAULT_LON);
+                                                }
+                                            );
+                                        } else {
+                                            alert("Geolocation is not supported by this browser.");
+                                        }
+                                    });
+                                }
+
+                                // Tool switching
+                                const toolData = {
+                                    assistant: {
+                                        title: 'AI Assistant',
+                                        description: 'Get personalized farming advice and crop recommendations'
+                                    },
+                                    weather: {
+                                        title: 'Weather AI',
+                                        description: 'Hyperlocal weather forecasts and agricultural insights'
+                                    },
+                                    prediction: {
+                                        title: 'Crop Prediction AI',
+                                        description: 'Predict yields, optimal harvest times, and market trends'
+                                    },
+                                    analysis: {
+                                        title: 'Crop Analysis',
+                                        description: 'AI-powered crop health analysis from images'
+                                    },
+                                    library: {
+                                        title: 'Knowledge Library',
+                                        description: 'Browse farming guides, best practices, and research'
+                                    }
+                                };
+
+                                toolBtns.forEach(btn => {
+                                    btn.addEventListener('click', () => {
+                                        const tool = btn.dataset.tool;
+
+                                        // Update active states
+                                        toolBtns.forEach(b => b.classList.remove('active'));
+                                        btn.classList.add('active');
+
+                                        // Hide all content
+                                        toolContents.forEach(content => content.classList.add('hidden'));
+
+                                        // Show selected content
+                                        document.getElementById(tool + 'Content').classList.remove('hidden');
+
+                                        // Update header
+                                        toolTitle.textContent = toolData[tool].title;
+                                        toolDescription.textContent = toolData[tool].description;
+
+                                        // Update placeholder
+                                        if (tool === 'weather') {
+                                            messageInput.placeholder = 'Ask about weather conditions...';
+                                        } else if (tool === 'prediction') {
+                                            messageInput.placeholder = 'Ask about crop predictions...';
+                                        } else if (tool === 'analysis') {
+                                            messageInput.placeholder = 'Upload images or ask about crop analysis...';
+                                        } else if (tool === 'library') {
+                                            messageInput.placeholder = 'Search knowledge base...';
+                                        } else {
+                                            messageInput.placeholder = 'Ask me anything about farming...';
+                                        }
+                                    });
+                                });
+
+                                // Chat functionality
+                                const responses = {
+                                    'tomato': 'Based on common tomato issues, this could be blight, nutrient deficiency, or pest damage. Check for dark spots (blight), yellowing leaves (nitrogen deficiency), or small holes (pest damage). Ensure proper watering and consider organic fungicides.',
+                                    'corn': 'For corn, I recommend a balanced fertilizer with higher nitrogen content during early growth (like 16-16-8), then switch to lower nitrogen, higher phosphorus during tasseling. Apply 1-2 pounds per 100 square feet.',
+                                    'wheat': 'Wheat is typically ready for harvest when the grain moisture content is 12-14%. Look for golden color, hard kernels when pressed with fingernail, and dry stems. This usually occurs 30-35 days after flowering.',
+                                    'weather': 'Current conditions show optimal growing weather with 24°C temperature and 65% humidity. The upcoming light rain on Wednesday will be beneficial for your crops. Consider adjusting irrigation schedules accordingly.',
+                                    'prediction': 'Based on current data, your tomato yield is predicted to increase by 18% this season. Optimal harvest time is in 2-3 weeks. Market prices are expected to be favorable.',
+                                    'fertilizer': 'Choose fertilizers based on soil testing results. Generally, use higher nitrogen for leafy growth, phosphorus for root development, and potassium for overall plant health. Organic options include compost, manure, and bone meal.',
+                                    'pest': 'Integrated Pest Management (IPM) is most effective. Use beneficial insects, crop rotation, companion planting, and targeted organic pesticides only when necessary. Regular monitoring helps catch problems early.'
+                                };
+
+                                // Chat History Memory
+                                let chatHistory = [];
+
+                                async function sendMessage(message) {
+                                    if (!message.trim()) return;
+
+                                    // Add user message locally
+                                    addMessage(message, 'user');
+                                    messageInput.value = '';
+
+                                    // Show typing indicator
+                                    const typingDiv = document.createElement('div');
+                                    typingDiv.id = 'typingIndicator';
+                                    typingDiv.className = 'message-bubble flex items-start mb-4';
+                                    typingDiv.innerHTML = `
+                                        <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                            <i class="fas fa-robot text-white text-sm"></i>
+                                        </div>
+                                        <div class="bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-700">
+                                            <div class="flex space-x-1">
+                                                <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                                                <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                                <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                                            </div>
+                                        </div>
+                                    `;
+                                    document.getElementById('chatMessages').appendChild(typingDiv);
+                                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+
+                                    try {
+                                        // 1. Search Wikipedia for the query
+                                        const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(message)}&format=json&origin=*`;
+                                        const searchRes = await fetch(searchUrl);
+                                        const searchData = await searchRes.json();
+
+                                        if (searchData.query.search.length > 0) {
+                                            // 2. Get the first result's page ID
+                                            const pageId = searchData.query.search[0].pageid;
+                                            const title = searchData.query.search[0].title;
+
+                                            // 3. Fetch the page summary/extract
+                                            const contentUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&pageids=${pageId}&format=json&origin=*`;
+                                            const contentRes = await fetch(contentUrl);
+                                            const contentData = await contentRes.json();
+
+                                            const extract = contentData.query.pages[pageId].extract;
+
+                                            // Remove typing indicator
+                                            if (document.getElementById('typingIndicator')) {
+                                                document.getElementById('typingIndicator').remove();
+                                            }
+
+                                            // Display the result
+                                            let responseText = extract;
+                                            if (responseText.length > 500) {
+                                                responseText = responseText.substring(0, 500) + "...";
+                                            }
+
+                                            const wikiLink = `https://en.wikipedia.org/wiki/${encodeURIComponent(title)}`;
+                                            const finalResponse = `<strong>${title}</strong><br/><br/>${responseText}<br/><br/><a href="${wikiLink}" target="_blank" class="text-green-400 hover:underline">Read more on Wikipedia <i class="fas fa-external-link-alt text-xs"></i></a>`;
+
+                                            addMessage(finalResponse, 'bot');
+                                        } else {
+                                            // No results found
+                                            if (document.getElementById('typingIndicator')) {
+                                                document.getElementById('typingIndicator').remove();
+                                            }
+                                            addMessage("I couldn't find any information about that in my database. Could you try rephrasing your question?", 'bot');
+                                        }
+                                    } catch (error) {
+                                        console.error('Wikipedia API Error:', error);
+                                        if (document.getElementById('typingIndicator')) {
+                                            document.getElementById('typingIndicator').remove();
+                                        }
+                                        addMessage("I'm having trouble connecting to the knowledge base right now. Please check your internet connection.", 'bot');
+                                    }
+                                }
+
+                                function addMessage(message, sender) {
+                                    const messageDiv = document.createElement('div');
+                                    messageDiv.className = `message-bubble flex items-start mb-4 ${sender === 'user' ? 'justify-end' : ''}`;
+
+                                    if (sender === 'bot') {
+                                        messageDiv.innerHTML = `
+                                            <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                                <i class="fas fa-robot text-white text-sm"></i>
+                                            </div>
+                                            <div class="bg-gray-800 p-4 rounded-lg shadow-sm max-w-2xl border border-gray-700">
+                                                <div class="text-gray-200">${message}</div>
+                                            </div>
+                                        `;
+                                    } else {
+                                        messageDiv.innerHTML = `
+                                            <div class="bg-green-700 text-white p-4 rounded-lg shadow-sm max-w-2xl">
+                                                <p>${message}</p>
+                                            </div>
+                                            <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center ml-3 flex-shrink-0">
+                                                <i class="fas fa-user text-white text-sm"></i>
+                                            </div>
+                                        `;
+                                    }
+
+                                    const chatMessages = document.getElementById('chatMessages');
+                                    chatMessages.appendChild(messageDiv);
+                                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                                }
+
+                                // Event listeners
+                                sendBtn.addEventListener('click', () => {
+                                    sendMessage(messageInput.value);
+                                });
+
+                                messageInput.addEventListener('keypress', (e) => {
+                                    if (e.key === 'Enter') {
+                                        sendMessage(messageInput.value);
+                                    }
+                                });
+
+                                // Suggestion buttons
+                                suggestionBtns.forEach(btn => {
+                                    btn.addEventListener('click', () => {
+                                        const text = btn.querySelector('span').textContent;
+                                        sendMessage(`Tell me about ${text.toLowerCase()}`);
+                                    });
+                                });
+
+                                // New chat button
+                                newChatBtn.addEventListener('click', () => {
+                                    chatMessages.innerHTML = '';
+                                });
+
+                                // Image upload for crop analysis
+                                uploadZone.addEventListener('click', () => {
+                                    cropImageInput.click();
+                                });
+
+                                cropImageInput.addEventListener('change', (e) => {
+                                    if (e.target.files.length > 0) {
+                                        const file = e.target.files[0];
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            analyzedImage.src = e.target.result;
+                                            analysisResults.classList.remove('hidden');
+                                        };
+                                        reader.readAsDataURL(file);
+                                    }
+                                });
+
+                                // Drag and drop for upload zone
+                                uploadZone.addEventListener('dragover', (e) => {
+                                    e.preventDefault();
+                                    uploadZone.classList.add('border-orange-400');
+                                });
+
+                                uploadZone.addEventListener('dragleave', () => {
+                                    uploadZone.classList.remove('border-orange-400');
+                                });
+
+                                uploadZone.addEventListener('drop', (e) => {
+                                    e.preventDefault();
+                                    uploadZone.classList.remove('border-orange-400');
+                                    const files = e.dataTransfer.files;
+                                    if (files.length > 0) {
+                                        const file = files[0];
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            analyzedImage.src = e.target.result;
+                                            analysisResults.classList.remove('hidden');
+                                        };
+                                        reader.readAsDataURL(file);
+                                    }
+                                });
+                                // Settings Modal Logic
+                                const settingsModal = document.getElementById('settingsModal');
+                                const openSettingsBtn = document.getElementById('openSettingsBtn');
+                                const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+                                const closeSettingsOverlay = document.getElementById('closeSettingsOverlay');
+                                const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+                                function openSettings() {
+                                    settingsModal.classList.remove('hidden');
+                                }
+
+                                function closeSettings() {
+                                    settingsModal.classList.add('hidden');
+                                }
+
+                                if (openSettingsBtn) {
+                                    openSettingsBtn.addEventListener('click', (e) => {
+                                        e.preventDefault(); // Prevent default tool switching behavior if any
+                                        openSettings();
+                                    });
+                                }
+
+                                if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', closeSettings);
+                                if (closeSettingsOverlay) closeSettingsOverlay.addEventListener('click', closeSettings);
+
+                                if (saveSettingsBtn) {
+                                    saveSettingsBtn.addEventListener('click', () => {
+                                        // Save settings logic here (e.g., to localStorage)
+                                        const darkMode = document.querySelector('#settingsModal input[type="checkbox"]').checked;
+                                        localStorage.setItem('darkMode', darkMode);
+
+                                        // Show success feedback
+                                        const originalText = saveSettingsBtn.innerText;
+                                        saveSettingsBtn.innerText = 'Saved!';
+                                        saveSettingsBtn.classList.add('bg-green-700');
+
+                                        setTimeout(() => {
+                                            saveSettingsBtn.innerText = originalText;
+                                            saveSettingsBtn.classList.remove('bg-green-700');
+                                            closeSettings();
+                                        }, 1000);
+                                    });
+                                }
+
+                                // Initialize dark mode from settings
+                                const savedDarkMode = localStorage.getItem('darkMode');
+                                if (savedDarkMode === 'false') {
+                                    // Logic to toggle light mode if implemented
+                                }
+                            }
+                        </script>
+                        <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'990d9b9f175f9149',t:'MTc2MDg0ODkzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
+
 </html>
