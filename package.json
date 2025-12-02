@@ -1,0 +1,19 @@
+{
+  "name": "agrow-ai-react",
+  "version": "1.0.0",
+  "description": "Agrow AI - Intelligent Farming Assistant (React Version)",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.0"
+  }
+}
